@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 import json
 import pymongo
+from pymongo.errors import DuplicateKeyError
 from itemadapter import ItemAdapter
 
 
@@ -39,13 +40,16 @@ class MongoPipeline:
     def open_spider(self, spider):
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
-        # self.db[self.collection_name].create_index()
+        self.db[self.collection_name].create_index("url", unique = True)
+        self.db[self.collection_name].create_index({ "timestamp": -1 })
     
     def close_spider(self, spider):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name]
-        self.db[self.collection_name].insert_one(ItemAdapter(item).asdict())
+        try:
+            self.db[self.collection_name].insert_one(ItemAdapter(item).asdict())
+        except DuplicateKeyError:
+            pass
         return item
     

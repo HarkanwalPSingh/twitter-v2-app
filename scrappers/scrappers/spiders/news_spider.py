@@ -2,6 +2,8 @@ from typing import Any
 from pathlib import Path
 
 import scrapy
+import time
+
 from scrapy.http import Response
 from scrapy.loader import ItemLoader
 
@@ -40,6 +42,7 @@ class NewsSpider(scrapy.Spider):
         loader.add_value("url", response.url)
         loader.add_css("headlines", "section.mainContainer div#dataHolder h1::text")
         loader.add_css("content", "section.mainContainer p::text")
+        loader.add_value("timestamp", int(time.time()*1000))
 
         yield loader.load_item()
         
