@@ -3,6 +3,7 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/items.html
 import scrapy
+from itemloaders.processors import MapCompose, Join
 
 # Not needed I think
 class NewsLink(scrapy.Item):
@@ -14,4 +15,6 @@ class NewsLink(scrapy.Item):
 class NewsItem(scrapy.Item):
     url = scrapy.Field()
     headlines = scrapy.Field()
-    content = scrapy.Field()
+    content = scrapy.Field(
+        output_processor = Join("")
+    )

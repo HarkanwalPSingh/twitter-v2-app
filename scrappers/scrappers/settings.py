@@ -62,9 +62,10 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "scrappers.pipelines.ScrappersPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "scrappers.pipelines.JsonWritePipeline": 300,
+   "scrappers.pipelines.MongoPipeline": 500
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -91,3 +92,7 @@ ROBOTSTXT_OBEY = True
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+# MongoDb settings
+MONGO_URI = "localhost:27017"
+MONGO_DB = "items"
