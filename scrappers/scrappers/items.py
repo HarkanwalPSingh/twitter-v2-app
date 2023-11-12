@@ -4,7 +4,7 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 import scrapy
 
-
+# Not needed I think
 class NewsLink(scrapy.Item):
     id = scrapy.Field()
     link = scrapy.Field()
@@ -12,7 +12,6 @@ class NewsLink(scrapy.Item):
 
 
 class NewsItem(scrapy.Item):
-    id = scrapy.Field()
     url = scrapy.Field()
     headlines = scrapy.Field()
     content = scrapy.Field()
