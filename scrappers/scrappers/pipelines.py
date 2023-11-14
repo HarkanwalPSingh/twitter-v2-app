@@ -10,6 +10,9 @@ import pymongo
 from pymongo.errors import DuplicateKeyError
 from itemadapter import ItemAdapter
 
+import firebase_admin
+from firebase_admin import firestore
+
 
 class JsonWritePipeline:
     def open_spider(self, spider):
@@ -52,4 +55,21 @@ class MongoPipeline:
         except DuplicateKeyError:
             pass
         return item
+
+class FirestorePipeline:
+    collection_name = "news_items"
+
+    def __init__(self):
+        self.app = firebase_admin.initialize_app()
+    
+    def open_spider(self, spider):
+        self.db = firestore.client()
+
+    def process_item(self, item, spider):
+        document_id = item['headlines']
+        doc_ref = self.db.collection("news_items").document(document_id)
+        doc_ref.set(item, merge = True)
+    
+    def close_spider(self, spider):
+        self.db.close()
     
