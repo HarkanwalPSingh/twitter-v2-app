@@ -42,6 +42,7 @@ class NewsSpider(scrapy.Spider):
         loader.add_css("content", "section.mainContainer p::text")
         timestamp = mainContainer.css("div.actionDiv div.dateTime::text").get()
         loader.add_value("timestamp", self.convert_timestamp(timestamp))
+        loader.add_value("tweeted", False)
 
         yield loader.load_item()
 

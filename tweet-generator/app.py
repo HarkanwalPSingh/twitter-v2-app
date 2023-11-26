@@ -22,8 +22,8 @@ parameters = {
 model = TextGenerationModel.from_pretrained("text-bison-32k")
 
 def fetch_latest_news():
-    query = db.collection("news_items").order_by("timestamp", direction = firestore.Query.DESCENDING).limit(1)
-    return query.get()[0].to_dict()
+    query = db.collection("news_items").order_by("timestamp", direction = firestore.Query.DESCENDING).limit(5)
+    return query.get()
 
 def generate_tweet(news_item: NewsItem):
     prompt = f"""
@@ -33,10 +33,23 @@ def generate_tweet(news_item: NewsItem):
     News Link: {news_item.url}"""
     return model.predict(prompt, **parameters)
 
-news_item = NewsItem(**fetch_latest_news())
+def post_tweet(tweet):
+    db.collection("news_items").document(news_item.headlines).update(
+        {
+            "tweeted": True
+        }
+    )
 
-response = generate_tweet(news_item)
+    print(tweet)
 
-print(response.text)
+
+news_items = fetch_latest_news()
+
+for news_item in news_items:
+    news_item = NewsItem(**news_item.to_dict())
+    if not news_item.tweeted:
+        response = generate_tweet(news_item)
+        tweet = response.text
+        post_tweet(tweet)
 
 db.close()

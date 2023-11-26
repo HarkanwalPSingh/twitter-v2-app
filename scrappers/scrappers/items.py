@@ -25,3 +25,6 @@ class NewsItem(scrapy.Item):
     timestamp = scrapy.Field(
         output_processor = TakeFirst()
     )
+    tweeted = scrapy.Field(
+        output_processor = TakeFirst()
+    )
