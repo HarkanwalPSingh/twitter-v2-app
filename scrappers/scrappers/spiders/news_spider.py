@@ -1,8 +1,10 @@
+import os
 from typing import Any
 from pathlib import Path
 
 import scrapy
 import time
+from datetime import datetime
 
 from scrapy.http import Response
 from scrapy.loader import ItemLoader
@@ -12,12 +14,8 @@ from scrappers.items import NewsItem
 
 class NewsSpider(scrapy.Spider):
     name = "news-spider"
-    start_urls = [
-        "https://www.hindustantimes.com/cities/bengaluru-news"
-    ]
-    allowed_domains = [
-        "hindustantimes.com"
-    ]
+    start_urls = os.getenv('START_URLS').split(',')
+    allowed_domains = os.getenv('ALLOWED_DOMAINS').split(',')
 
     def parse(self, response: Response):
         mainContainer = response.css("section.mainContainer")
@@ -42,23 +40,19 @@ class NewsSpider(scrapy.Spider):
         loader.add_value("url", response.url)
         loader.add_css("headlines", "section.mainContainer div#dataHolder h1::text")
         loader.add_css("content", "section.mainContainer p::text")
-        loader.add_value("timestamp", int(time.time()*1000))
+        timestamp = mainContainer.css("div.actionDiv div.dateTime::text").get()
+        loader.add_value("timestamp", self.convert_timestamp(timestamp))
 
         yield loader.load_item()
+
+
+    def convert_timestamp(self, date_string):
+        date_string = date_string.strip()
         
-        # yield {
-        #     "headlines": mainContainer.css("div#dataHolder h1::text").get(),
-        #     "text" : mainContainer.css("p::text").getall()
-        # }
+        date_format = '%b %d, %Y %I:%M %p %Z'
 
+        dt_object = datetime.strptime(date_string, date_format)
 
-# scrapy shell 'https://www.hindustantimes.com/cities/bengaluru-news'
+        epoch_timestamp_seconds = int(dt_object.timestamp())
 
-# mainContainer = response.css("section.mainContainer")
-# article_anchor = mainContainer.css("div.cartHolder h3.hdg3 a")[0]
-# article_link = article_anchor.css("a::attr(href)").get()
-
-
-# ## For getting all article links
-# article_anchors = mainContainer.css("div.cartHolder")
-# article_anchors.css("h3.hdg3 a::attr(href)").getall()
+        return epoch_timestamp_seconds * 1000

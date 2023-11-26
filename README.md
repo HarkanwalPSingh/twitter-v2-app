@@ -14,6 +14,8 @@ docker run --name mongodb -d -p 27017:27017 mongodb/mongodb-community-server:$MO
 ### Scrapy Commands
 
 ```shell
+export START_URLS="xxx"
+export ALLOWED_DOMAINS="xxx"
 scrapy crawl news-spider
 ```
 
@@ -25,4 +27,7 @@ scrapy crawl news-spider
 
 ```shell
 pipenv install google-cloud-aiplatform google-cloud-storage firebase-admin
+export PROJECT=xxx
+export REGION=us-central1
+
 ```
